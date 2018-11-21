@@ -125,7 +125,7 @@ router.post('/search', function(req, res, next) {
     });
 });
 
-router.get('/favorites', function(req, res, next) {
+router.get('/favorites',[helper.isAuthenticated, function(req, res, next) {
   const uniqueId  = req.user.uniqueId;
   const sessionId =  req.session.id;
 
@@ -153,7 +153,7 @@ router.get('/favorites', function(req, res, next) {
     }).catch((error) => {
       console.log("ERROR GETTING FAVORITES");
     });
-});
+}]);
 
 router.post('/favorites/:movieId', function(req, res, next) {
   const movieId   = req.params.movieId;
@@ -162,8 +162,10 @@ router.post('/favorites/:movieId', function(req, res, next) {
 
   helper.addFavorites(uniqueId, movieId, sessionId).then((res) => {
     console.log("Added to Favorites");
+    return res;
   }).catch((error) => {
     console.log("Failed Adding to Favorites");
+    return error;
   });
 });
 
@@ -178,6 +180,11 @@ router.get('/auth/facebook/callback', passport.authenticate('facebook', { succes
 router.get('/auth/twitter', passport.authenticate('twitter'));
 
 router.get('/auth/twitter/callback', passport.authenticate('twitter', { successRedirect: '/', failureRedirect: '/login' }), function(req, res, next){console.log("Twitter Auth Callback ran !");});
+
+router.get('/auth/github', passport.authenticate('github'));
+
+router.get('/auth/github/callback', passport.authenticate('github', { successRedirect: '/', failureRedirect: '/login' }), function(req, res, next){console.log("GitHub Auth Callback ran !");});
+
 
 router.get('/logout', (req, res, next) => {
   req.logout();

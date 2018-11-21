@@ -18,9 +18,11 @@ let db = new FirebaseStore({
 
 let ref = db.database.ref('movieApp');
 
-ref.on('child_added', function(childSnapshot, prevChildKey) {    //Retrieve all JSON objects in the DB when the page loads, then do so only when a new JSON object is pushed to the DB
+ref.on('child_changed', function(childSnapshot, prevChildKey) {    //Retrieve all JSON objects in the DB when the page loads, then do so only when a new JSON object is pushed to the DB
   snapshot = JSON.stringify(childSnapshot);
+  console.log(`child_changed -snapshot(STRINGIFIED): ${snapshot}`);
   snapshot = JSON.parse(snapshot);
+
 
   let userRecord = {
     uniqueId:   childSnapshot.key,
@@ -31,7 +33,25 @@ ref.on('child_added', function(childSnapshot, prevChildKey) {    //Retrieve all 
   }
 
   usersArray.push(userRecord);
-  console.log(usersArray);
+  console.log("child_changed - usersArray: " + JSON.stringify(usersArray));
+});
+
+ref.on('child_added', function(childSnapshot, prevChildKey) {    //Retrieve all JSON objects in the DB when the page loads, then do so only when a new JSON object is pushed to the DB
+  snapshot = JSON.stringify(childSnapshot);
+  console.log(`child_added - snapshot(STRINGIFIED): ${snapshot}`);
+  snapshot = JSON.parse(snapshot);
+
+
+  let userRecord = {
+    uniqueId:   childSnapshot.key,
+    profileID:  snapshot.profileID,
+    fullName:   snapshot.fullName,
+    profilePic: snapshot.profilePic,
+    favorites:  snapshot.favorites
+  }
+
+  usersArray.push(userRecord);
+  console.log("child_added - usersArray: " + JSON.stringify(usersArray));
 });
 
 module.exports = {

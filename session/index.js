@@ -11,7 +11,7 @@ const firebase = require('../db/firebase.js');
   });
 }else{*/
   module.exports = session({
-    secret: "secret",
+    secret: "topSecret",
     resave: false,
     saveUninitialized: true,
     store: firebase.db

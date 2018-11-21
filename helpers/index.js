@@ -3,6 +3,7 @@ let ref = firebase.db.database.ref('movieApp');
 
 //Find a single user based on profileID(May not be unique)
 let findOne = (profileID) => {
+  console.log(`findOne - profileId: ${profileID}`);
   return new Promise((resolve, reject) => {
     let usersArryLen = firebase.usersArray.length;
     firebase.usersArray.forEach((user, index) => {
@@ -54,8 +55,10 @@ let createNewUser = (profile) => {
 
 //Find User by Firebase Unique ID
 let findById = (id) => {
+  console.log(`findById - UniqueId: ${id}`);
   return new Promise((resolve, reject) => {
     firebase.usersArray.forEach(function(user, index){
+      console.log(`findById > user: ${JSON.stringify(firebase.usersArray)} > id: ${id}`);
       if(user.uniqueId === id){
         console.log("UNIQUE ID MATCH!");
         resolve(user);
@@ -129,10 +132,20 @@ let processFavoriteMovies = (uniqueId) => {
   });
 }
 
+//middleware to check if the user is authenticated & logged in
+let isAuthenticated = (req, res, next) => {
+  if(req.isAuthenticated()){ //This method is provided to us by passport, returns true || false
+    next();
+  }else{
+    res.redirect('/login');
+  }
+}
+
 module.exports = {
   findOne,
   findById,
   createNewUser,
   addFavorites,
-  getFavorites
+  getFavorites,
+  isAuthenticated
 }
