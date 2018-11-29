@@ -1,55 +1,54 @@
-const firebase = require('../db/firebase.js');
-let ref = firebase.db.database.ref('movieApp');
+// const firebase = require('../db/firebase.js');
+// let ref = firebase.db.database.ref('movieApp');
+const db = require("../models");
 
 //Find a single user based on profileID(May not be unique)
 let findOne = (profileID) => {
   console.log(`findOne - profileId: ${profileID}`);
   return new Promise((resolve, reject) => {
-    let usersArryLen = firebase.usersArray.length;
-    firebase.usersArray.forEach((user, index) => {
-      if(user.profileID === profileID){
-        console.log("ProfileID MATCH!");
-        resolve(user);
-      }
-      if(usersArryLen === (index+1)){
-        reject();
-      }
-    });
+    let user = findById(profileID);
 
-    if(usersArryLen === 0)
-      reject();
+    if (user == null || user === 'undefined') {
+      reject()
+    } else {
+      resolve(user);
+    }
 
   }).catch((error) => {
-      console.log("NO MATCH");
-    });
+    console.log(error);
+    console.log("NO MATCH");
+  });
 }
 
 //Create New User
 let createNewUser = (profile) => {
   console.log("Creating New User");
-
   return new Promise((resolve, reject) => {
-    ref.push({
-      profileID:  profile.id,
-      fullName:   profile.displayName,
+
+    let newProfile = {
+      profileId: profile.id,
       profilePic: profile.photos[0].value || '',
       favorites: ''
-    }).then((snap) => {
-       console.log("snap.key: " + snap.key);
+    }
 
-       resolve({
-         uniqueId:   snap.key,
-         profileID:  profile.id,
-         fullName:   profile.displayName,
-         profilePic: profile.photos[0].value || '',
-         favorites: ''
-       });
-    }).catch((error) => {
-      console.log("Error Inserting record in DB");
-      reject();
-    });
+    db.Profile.create(newProfile)
+      .then(function (dbResult) {
+
+        resolve({
+          uniqueId: dbResult.id,
+          profileID: profile.id,
+          //fullName: profile.displayName,
+          profilePic: profile.photos[0].value || '',
+          favorites: ''
+        });
+
+      }).catch((err) => {
+        console.log(err);
+        reject();
+      });
   }).catch((error) => {
-      console.log("Could Not Create New User");
+    console.log(error);
+    console.log("Could Not Create New User");
   });
 }
 
@@ -57,34 +56,64 @@ let createNewUser = (profile) => {
 let findById = (id) => {
   console.log(`findById - UniqueId: ${id}`);
   return new Promise((resolve, reject) => {
-    firebase.usersArray.forEach(function(user, index){
-      console.log(`findById > user: ${JSON.stringify(firebase.usersArray)} > id: ${id}`);
-      if(user.uniqueId === id){
-        console.log("UNIQUE ID MATCH!");
-        resolve(user);
-      }
-      if(usersArryLen === (index+1)){
+
+    // find user in database
+    db.Profile.findOne({
+      where: {
+        id: id
+      },
+      include: [db.Favorites]
+    }).then(function (profile) {
+      console.log("IN");
+      if (profile != null) {
+        resolve(profile);
+      } else {
         reject();
       }
+
+      //res.json(profile);
+    }).catch((err) => {
+      console.log(err);
+      reject();
     });
+
   }).catch((error) => {
-      console.log("NO MATCH");
+    console.log(error);
+    console.log("NO MATCH");
   });
 }
 
 let addFavorites = (uniqueId, movieId, sessionId) => {
+  console.log("ADD FAVORITES");
+  console.log(uniqueId);
+  console.log(movieId);
+  
   return new Promise((resolve, reject) => {
-    let searchRef    = ref;      //'myApp'
-    let newSearchRef = searchRef.child(uniqueId);
-    let updateRef    = newSearchRef.child('favorites');
-
-    updateRef.push({ movieId: movieId }).then((data) => {
-      console.log("success adding favorite movie");
-      resolve(data);
-    }).catch((error) => {
-      console.log("failed adding favorite movie");
+    let newFav = {
+      movieId: movieId,
+      ProfileId: uniqueId
+    }
+    db.Favorites.create(newFav).then(function(dbPost) {
+      console.log(dbPost);
+      resolve(dbPost);
+    }).catch((error)=>{
+      console.log(error);
       reject();
     });
+    // let searchRef = ref;      //'myApp'
+    // let newSearchRef = searchRef.child(uniqueId);
+    // let updateRef = newSearchRef.child('favorites');
+
+    // updateRef.push({ movieId: movieId }).then((data) => {
+    //   console.log("success adding favorite movie");
+    //   resolve(data);
+    // }).catch((error) => {
+    //   console.log(error);
+    //   reject();
+    // });
+  }).catch((error) => {
+    console.log(error);
+    console.log("NO MATCH");
   });
 }
 
@@ -104,39 +133,66 @@ let getFavorites = (uniqueId) => {
 
 let processFavoriteMovies = (uniqueId) => {
   console.log(`processFavoriteMovies - uniqueId: ${uniqueId}`);
-  console.log(`firebase.usersArray: ${JSON.stringify(firebase.usersArray)}`);
+
   return new Promise((resolve, reject) => {
-    firebase.usersArray.forEach(function(user, index){
-      console.log(`user(Inside ForEach): ${user}`);
-      console.log(`usersArray(Inside ForEach): ${JSON.stringify(firebase.usersArray)}`);
-      if(user.uniqueId === uniqueId){
-        console.log("Favorites(Inner): UNIQUE ID MATCH!");     //FIREBASE IS RETARDED !!!!
-        console.log(`processFavoriteMovies - user.uniqueId: ${user.uniqueId}`);
-        console.log(`processFavoriteMovies - user.favorites: ${user.favorites}`);  //Array of key: movieId object pairs. ie: 'SomeIdUsedAsKey': {movieId: 33432}
 
-        let movieArray = Object.values(user.favorites);   //Array of just movieId Objects. ie: {movieId: 33432}
-        console.log(`movieArray: ${movieArray}`);
+    var query = {
+      ProfileId: uniqueId
+    };
 
-        let newMovieArray = new Array();
+    db.Favorites.findAll({
+      where: query
+    }).then(function (dbPost) {
 
-        movieArray.forEach(function(movie, index){
-          console.log(`MovieID: ${movie.movieId}`);
-          newMovieArray.push(movie.movieId);              //Array of just movie ids
-        });
-        console.log(`newMovieArray: ${newMovieArray}`);
+      console.log("processFavoriteMovies");
+      console.log(dbPost);
+      let newMovieArray = new Array();
 
+      if (dbPost != null) {
         resolve(newMovieArray);
+      } else {
+        reject();
       }
+
+    }).catch((error) => {
+      console.log(error);
+      console.log("NO MATCH");
     });
-    reject();
+
+    // firebase.usersArray.forEach(function (user, index) {
+    //   console.log(`user(Inside ForEach): ${user}`);
+    //   console.log(`usersArray(Inside ForEach): ${JSON.stringify(firebase.usersArray)}`);
+    //   if (user.uniqueId === uniqueId) {
+    //     console.log("Favorites(Inner): UNIQUE ID MATCH!");     //FIREBASE IS RETARDED !!!!
+    //     console.log(`processFavoriteMovies - user.uniqueId: ${user.uniqueId}`);
+    //     console.log(`processFavoriteMovies - user.favorites: ${user.favorites}`);  //Array of key: movieId object pairs. ie: 'SomeIdUsedAsKey': {movieId: 33432}
+
+    //     let movieArray = Object.values(user.favorites);   //Array of just movieId Objects. ie: {movieId: 33432}
+    //     console.log(`movieArray: ${movieArray}`);
+
+    //     let newMovieArray = new Array();
+
+    //     movieArray.forEach(function (movie, index) {
+    //       console.log(`MovieID: ${movie.movieId}`);
+    //       newMovieArray.push(movie.movieId);              //Array of just movie ids
+    //     });
+    //     console.log(`newMovieArray: ${newMovieArray}`);
+
+    //     resolve(newMovieArray);
+    //   }
+    // });
+    // reject();
+  }).catch((error) => {
+    console.log(error);
+    console.log("NO MATCH");
   });
 }
 
 //middleware to check if the user is authenticated & logged in
 let isAuthenticated = (req, res, next) => {
-  if(req.isAuthenticated()){ //This method is provided to us by passport, returns true || false
+  if (req.isAuthenticated()) { //This method is provided to us by passport, returns true || false
     next();
-  }else{
+  } else {
     res.redirect('/login');
   }
 }

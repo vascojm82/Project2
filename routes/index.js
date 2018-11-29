@@ -67,6 +67,7 @@ router.use((req, res, next) => {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  
   console.log("Session1: " + req.session.id);
   const sessionId =  req.session.id;
 
@@ -74,10 +75,8 @@ router.get('/', function(req, res, next) {
     sessionId = '';
   }
 
-  console.log(`sessionId: ${sessionId}`);
-
   request.get(nowPlayingUrl, function(error, response, data){
-    console.log("data: " + JSON.stringify(JSON.parse(data).results));
+    //console.log("data: " + JSON.stringify(JSON.parse(data).results));
 
     res.render('index', {
       jsonData: JSON.parse(data).results,
@@ -126,7 +125,8 @@ router.post('/search', function(req, res, next) {
 });
 
 router.get('/favorites',[helper.isAuthenticated, function(req, res, next) {
-  const uniqueId  = req.user.uniqueId;
+
+  const uniqueId  = req.user.id;
   const sessionId =  req.session.id;
 
   if(typeof sessionId === 'undefined'){
@@ -156,10 +156,12 @@ router.get('/favorites',[helper.isAuthenticated, function(req, res, next) {
 }]);
 
 router.post('/favorites/:movieId', function(req, res, next) {
-  const movieId   = req.params.movieId;
-  const uniqueId  = req.user.uniqueId || '';
-  const sessionId = req.session.id;
+  console.log("POST");
 
+  const movieId   = req.params.movieId;
+  let uniqueId  = req.user.id;
+  const sessionId = req.session.id;
+  console.log(uniqueId);
   helper.addFavorites(uniqueId, movieId, sessionId).then((res) => {
     console.log("Added to Favorites");
     return res;
