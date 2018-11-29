@@ -3,7 +3,7 @@ let ref = firebase.db.database.ref('movieApp');
 
 //Find a single user based on profileID(May not be unique)
 let findOne = (profileID) => {
-  console.log(`findOne - profileId: ${profileID}`);
+  console.log(`findOne -- profileId: ${profileID}`);
   return new Promise((resolve, reject) => {
     let usersArryLen = firebase.usersArray.length;
     firebase.usersArray.forEach((user, index) => {
@@ -55,18 +55,20 @@ let createNewUser = (profile) => {
 
 //Find User by Firebase Unique ID
 let findById = (id) => {
-  console.log(`findById - UniqueId: ${id}`);
-  return new Promise((resolve, reject) => {
-    firebase.usersArray.forEach(function(user, index){
-      console.log(`findById > user: ${JSON.stringify(firebase.usersArray)} > id: ${id}`);
+  console.log(`findById -- UniqueId: ${id}`);
+  return new Promise(async (resolve, reject) => {
+    await firebase.usersArray.forEach(function(user, index){
+      // console.log(`findById > user: ${JSON.stringify(firebase.usersArray)} > id: ${id}`);
+      console.log(`index: ${index}`);
+      console.log(``)
+      console.log(`findById > user: ${JSON.stringify(JSON.stringify(user))} > id: ${id}`);
+
       if(user.uniqueId === id){
         console.log("UNIQUE ID MATCH!");
-        resolve(user);
-      }
-      if(usersArryLen === (index+1)){
-        reject();
+        return resolve(user);
       }
     });
+    reject();
   }).catch((error) => {
       console.log("NO MATCH");
   });
@@ -89,35 +91,17 @@ let addFavorites = (uniqueId, movieId, sessionId) => {
 }
 
 let getFavorites = (uniqueId) => {
-  return new Promise((resolve, reject) => {
-    console.log(`getFavorites - uniqueId: ${uniqueId}`);
-    processFavoriteMovies(uniqueId)
-      .then((data) => {
-        console.log("Data: " + data);
-        resolve(data);
-      }).catch((error) => {
-        console.log("ERROR: Could Not Get Favorite Movies Data");
-        reject();
-      });
-  });
-}
+  return new Promise( async(resolve, reject) => {
+    let newMovieArray = new Array();
+    let movieArray = new Array();
+    let found = false;
 
-let processFavoriteMovies = (uniqueId) => {
-  console.log(`processFavoriteMovies - uniqueId: ${uniqueId}`);
-  console.log(`firebase.usersArray: ${JSON.stringify(firebase.usersArray)}`);
-  return new Promise((resolve, reject) => {
-    firebase.usersArray.forEach(function(user, index){
-      console.log(`user(Inside ForEach): ${user}`);
-      console.log(`usersArray(Inside ForEach): ${JSON.stringify(firebase.usersArray)}`);
-      if(user.uniqueId === uniqueId){
-        console.log("Favorites(Inner): UNIQUE ID MATCH!");     //FIREBASE IS RETARDED !!!!
-        console.log(`processFavoriteMovies - user.uniqueId: ${user.uniqueId}`);
-        console.log(`processFavoriteMovies - user.favorites: ${user.favorites}`);  //Array of key: movieId object pairs. ie: 'SomeIdUsedAsKey': {movieId: 33432}
+    await firebase.usersArray.forEach(function(user, index){
+      if(user.uniqueId === uniqueId){                          //FIREBASE IS RETARDED !!!
+        console.log(`processFavoriteMovies - user.favorites: ${JSON.stringify(user.favorites)}`);  //Array of key: movieId object pairs. ie: 'SomeIdUsedAsKey': {movieId: 33432}
 
-        let movieArray = Object.values(user.favorites);   //Array of just movieId Objects. ie: {movieId: 33432}
-        console.log(`movieArray: ${movieArray}`);
-
-        let newMovieArray = new Array();
+        newMovieArray = [];
+        movieArray = Object.values(user.favorites);   //Array of just movieId Objects. ie: {movieId: 33432}
 
         movieArray.forEach(function(movie, index){
           console.log(`MovieID: ${movie.movieId}`);
@@ -125,11 +109,16 @@ let processFavoriteMovies = (uniqueId) => {
         });
         console.log(`newMovieArray: ${newMovieArray}`);
 
-        resolve(newMovieArray);
+        found = true;
       }
     });
-    reject();
-  });
+    if(found){
+      resolve(newMovieArray);
+    }else{
+      console.log("ERROR: Could Not Get Favorite Movies Data");
+      reject();
+    }
+ });
 }
 
 //middleware to check if the user is authenticated & logged in

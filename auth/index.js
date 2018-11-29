@@ -24,9 +24,9 @@ let deserializeUser = passport.deserializeUser((id, done) => {
 
 let authProcessor = (accessToken, refreshToken, profile, done) => {
   helper.findOne(profile.id)
-    .then((result) => {
-      if(result){
-        done(null, result);
+    .then((user) => {
+      if(user){
+        done(null, user);
       } else{
         helper.createNewUser(profile)
           .then((user) => {
