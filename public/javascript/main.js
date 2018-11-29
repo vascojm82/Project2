@@ -24,7 +24,10 @@ $( document ).ready(function() {
 
     console.log("movieId: " + movieId);
     console.log("route: " +  route);
-
+    $('.btn-favorite span').text("Added to Favorites");
+    $('.btn-favorite i.fa').css("color","red");
     saveRecord(route);
   });
+
+  
 });
