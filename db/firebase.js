@@ -9,7 +9,7 @@ let snapshot = '';
 // Initialize Firebase
 const db_init = firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
-  databaseURL: "https://timesheet-6e4b2.firebaseio.com"
+  databaseURL: "https://classwork-4be24.firebaseio.com"
 });
 
 let db = new FirebaseStore({
