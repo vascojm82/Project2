@@ -23,6 +23,7 @@ let deserializeUser = passport.deserializeUser((id, done) => {
 
 let authProcessor = (accessToken, refreshToken, profile, done) => {
   helper.findOne(profile.id)
+
     .then((result) => {
       if(result){
         console.log('authProcessor');

@@ -14,9 +14,9 @@
     "profileFields": ["id", "displayName", "photos"]
   },
   "github": {
-    "clientID": "65d060a3ddf9378140a8",
-    "clientSecret": "d2d5344a8e1939b933393b807000646e6f9b794c",
-    "callbackURL": "http://localhost:3000/auth/github/callback",
+    "clientID": "<INSERT-HERE>",
+    "clientSecret": "<INSERT-HERE>",
+    "callbackURL": "<INSERT-HERE>/auth/github/callback",
     "profileFields": ["id", "displayName", "photos"]
   }
 }
