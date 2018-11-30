@@ -16,7 +16,7 @@
   "github": {
     "clientID": "eaa7a96ff9b7bab440d6",
     "clientSecret": "d416c2f4cf732c1145d2e12fc3258f4034ced3da",
-    "callbackURL": "<localhost:3000>/auth/github/callback",
+    "callbackURL": "//localhost:3000/auth/github/callback",
     "profileFields": ["id", "displayName", "photos"]
   }
 }

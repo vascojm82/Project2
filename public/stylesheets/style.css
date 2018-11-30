@@ -1,7 +1,8 @@
 body {
   position: relative;
   padding: 10px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 14px Cinzel;
+  /* font-weight: bold; */
   background-image: url('../images/soundwave02.png');
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -13,11 +14,22 @@ body {
 a {
   color: #00B7FF;
 }
-
+.navbar{
+  background: linear-gradient(rgb(87, 87, 87),black);
+  
+}
 .navbar-right{
   margin-right: 10px;
 }
 
+.navbar-brand{
+  font-weight: bolder !important;
+ color: rgb(252, 238, 238) !important;
+}
+
+ul.navbar-nav li a{
+  color: #fb5 !important;
+} 
 .container{
   margin-top: 50px;
 }
@@ -39,7 +51,7 @@ a {
 }
 
 .single-movie-title, .overview-header{
-  font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+  font-family: Cinzel;
   text-align: left;
   font-size: 30px
 }

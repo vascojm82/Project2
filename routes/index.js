@@ -11,8 +11,6 @@ const passport = require('passport');
 /*Additional processor function*/
 //Fetch all Favorite Movies from IMDB API
 let fetchFavoriteIMDB = (data) => {
-  console.log("Favorite Moviez: " + data);
-
   return new Promise((resolve, reject) => {
     const movieUrl = `${apiBaseUrl}/movie/`;
     let favoriteMovies = {results: new Array()};
@@ -22,22 +20,14 @@ let fetchFavoriteIMDB = (data) => {
 
       requestApi(movieUrl, favoriteMovieId)
         .then((movie) => {
-          console.log("movie: " + movie);
           favoriteMovies.results.push(movie);
-          console.log("This are your favoriteMovies: " + favoriteMovies);
-          console.log("favoriteMovies.length: " + favoriteMovies.results.length);
-
           if(favoriteMovies.results.length >= data.length){
-            console.log("data.length: " + data.length);
-            console.log("favoriteMovies.length: " + favoriteMovies.results.length);
-            console.log("SUCCESS FETCHING FAVORITE MOVIES: " + favoriteMovies);
             resolve(favoriteMovies);
           }
         })
         .catch((error) => {
           console.log("ERROR LOADING FAVORITE MOVIE RECORD TO ARRAY");
-          reject();
-          return;
+          return reject();
         });
     });
   });
@@ -53,7 +43,6 @@ let requestApi = (movieUrl, favoriteMovieId) => {
         return;
       }
 
-      console.log("REQUEST SUCCESSFULL: " + data);
       resolve(data);
     });
   });
@@ -160,12 +149,12 @@ router.post('/favorites/:movieId', function(req, res, next) {
   const uniqueId  = req.user.uniqueId || '';
   const sessionId = req.session.id;
 
-  helper.addFavorites(uniqueId, movieId, sessionId).then((res) => {
+  helper.addFavorites(uniqueId, movieId, sessionId).then((data) => {
     console.log("Added to Favorites");
-    return res;
+    res.json({success: "Added to Favorites"});
   }).catch((error) => {
     console.log("Failed Adding to Favorites");
-    return error;
+    res.json({error: error});
   });
 });
 
