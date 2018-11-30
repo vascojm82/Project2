@@ -1,8 +1,10 @@
 body {
   position: relative;
   padding: 10px;
+
   font: 14px Cinzel;
   /* font-weight: bold; */
+
   background-image: url('../images/soundwave02.png');
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -51,7 +53,9 @@ ul.navbar-nav li a{
 }
 
 .single-movie-title, .overview-header{
+
   font-family: Cinzel;
+
   text-align: left;
   font-size: 30px
 }

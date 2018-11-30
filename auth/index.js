@@ -3,7 +3,6 @@ const config = require('../config');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const TwitterStrategy = require('passport-twitter').Strategy;
 const GitHubStrategy = require('passport-github').Strategy;
-const firebase = require('../db/firebase.js');
 const helper = require('../helpers');
 
 let serializeUser = passport.serializeUser((user, done) => {
@@ -24,9 +23,12 @@ let deserializeUser = passport.deserializeUser((id, done) => {
 
 let authProcessor = (accessToken, refreshToken, profile, done) => {
   helper.findOne(profile.id)
-    .then((user) => {
-      if(user){
-        done(null, user);
+
+    .then((result) => {
+      if(result){
+        console.log('authProcessor');
+        console.log(result);
+        done(null, result);
       } else{
         helper.createNewUser(profile)
           .then((user) => {
