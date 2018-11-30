@@ -141,12 +141,19 @@ let processFavoriteMovies = (uniqueId) => {
         resolve(newMovieArray);
       } else {
         reject();
+      }
+  }).catch((error) => {
+    console.log(error);
+    console.log("NO MATCH");
   }).catch((error) => {
     console.log(error);
     console.log("NO MATCH");
   });
 
+});
 }
+
+
 
 //middleware to check if the user is authenticated & logged in
 let isAuthenticated = (req, res, next) => {
