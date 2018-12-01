@@ -14,9 +14,9 @@
     "profileFields": ["id", "displayName", "photos"]
   },
   "github": {
-    "clientID": "03b3704be312239790f5",
-    "clientSecret": "92284c8411012372f0a788c680da72ba1bc2389a",
-    "callbackURL": "http://localhost:3000/auth/github/callback",
+    "clientID": "eaa7a96ff9b7bab440d6",
+    "clientSecret": "d416c2f4cf732c1145d2e12fc3258f4034ced3da",
+    "callbackURL": "https://floating-hollows-32698.herokuapp.com/auth/github/callback",
     "profileFields": ["id", "displayName", "photos"]
   }
 }
