@@ -22,8 +22,9 @@
 		</div>
 	</div>
 
-	<% if((typeof user != 'undefined') && (typeof sessionId != 'undefined') && (typeof sessionId != '')) { %>
-		<% include authenticated-modal %>
-	<% } %>
+	<% if((typeof user != 'undefined') && (flag === 0)) { %>
+			<% console.log("About to open modal, flag: " + flag); %>
+			<% include authenticated-modal %>
+		<% } %>
 </body>
 </html>

@@ -4,12 +4,12 @@ const FacebookStrategy = require('passport-facebook').Strategy;
 const TwitterStrategy = require('passport-twitter').Strategy;
 const GitHubStrategy = require('passport-github').Strategy;
 const helper = require('../helpers');
-
 let serializeUser = passport.serializeUser((user, done) => {
-  console.log("serializeUser - User: " + JSON.stringify(user));
+ // console.log("serializeUser - User: " + JSON.stringify(user));
+console.log("SERIALIZE");
+console.log(user);
   done(null, user.uniqueId);
 });
-
 let deserializeUser = passport.deserializeUser((id, done) => {
   console.log("deserializeUser - User ID: " + id);
   helper.findById(id)
@@ -20,10 +20,13 @@ let deserializeUser = passport.deserializeUser((id, done) => {
       return;
     });
 })
-
 let authProcessor = (accessToken, refreshToken, profile, done) => {
-  helper.findOne(profile.id)
+  console.log("AUTHPROCESSOR");
+  console.log(accessToken);
+  console.log(refreshToken);
+  console.log(profile);
 
+  helper.findOne(profile.id)
     .then((result) => {
       if(result){
         console.log('authProcessor');
@@ -41,14 +44,9 @@ let authProcessor = (accessToken, refreshToken, profile, done) => {
       }
     });
 }
-
 let facebookStrategy = passport.use(new FacebookStrategy(config.fb, authProcessor));
 let twitterStrategy  = passport.use(new TwitterStrategy(config.twitter, authProcessor));
 let githubStrategy   = passport.use(new GitHubStrategy(config.github, authProcessor));
-
-console.log(config.fb);
-console.log(config.twitter);
-console.log(config.github);
 
 module.exports = () => {
   authProcessor,

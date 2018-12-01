@@ -1,4 +1,23 @@
+function toggleNavLiEffect(){
+  if($(window).width() < 768) {
+    $('.navbar-nav.login-favs li').removeClass('hvr-grow');
+  }else{
+    $('.navbar-nav.login-favs li').addClass('hvr-grow');
+  }
+}
+
+function toggleCenterDiv(){
+  if($(window).width() < 992) {
+    $('.main-row').removeClass('synopsis-row');
+  }else{
+    $('.main-row').addClass('synopsis-row');
+  }
+}
+
 $( document ).ready(function() {
+  toggleNavLiEffect();
+  toggleCenterDiv();
+
   function saveRecord(route, record){
       $.ajax({
           url: route,
@@ -29,5 +48,11 @@ $( document ).ready(function() {
     saveRecord(route);
   });
 
-  
+
+});
+
+$(window).resize(function(){
+    toggleNavLiEffect();
+    toggleCenterDiv();
+    console.log($(window).width());
 });
