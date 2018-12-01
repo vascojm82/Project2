@@ -1,5 +1,6 @@
 function toggleNavLiEffect(){
   if($(window).width() < 768) {
+    console.log("Toggle Navi");
     $('.navbar-nav.login-favs li').removeClass('hvr-grow');
   }else{
     $('.navbar-nav.login-favs li').addClass('hvr-grow');
@@ -7,6 +8,7 @@ function toggleNavLiEffect(){
 }
 
 function toggleCenterDiv(){
+  console.log("Toggle CenterDiv");
   if($(window).width() < 992) {
     $('.main-row').removeClass('synopsis-row');
   }else{
